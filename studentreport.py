@@ -4,7 +4,6 @@ import plotly.express as px
 
 st.title('Student Report')
 
-
 data = show_data()
 
 gender_count = data['gender'].value_counts().reset_index()

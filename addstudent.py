@@ -1,10 +1,10 @@
 import streamlit as st
-from student import test_connection
+from db import get_engine
 
 st.title('Add Student')
 
 def save_student(name, gender, major, grade):
-    conn = test_connection()
+    conn = get_engine()
     cursor = conn.cursor()
     query = """insert into studentlist(name,gender,major,grade) values (%s,%s,%s,%s)"""
     cursor.execute(query,(name, gender, major, grade))

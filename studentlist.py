@@ -1,12 +1,15 @@
 import streamlit as st
-from addstudent import test_connection
+from db import get_engine
 import pandas as pd
 
 st.title('List of students who will apply for jobs')
+
 def show_data():
-    conn = test_connection()
-    query = "select * from studentlist order by id "
-    df = pd.read_sql(query, conn)
+    engine = get_engine()
+    st.write("engine type:", type(engine))
+    with engine.connect() as conn:
+        query = "select * from studentlist order by id "
+        df = pd.read_sql(query, conn)
     return df
 
 df = show_data()
@@ -25,7 +28,7 @@ edited_df = st.data_editor(
 )
 if st.button("Delete Selected Rows"):
     rows_to_delete = edited_df[edited_df["Delete"] == True]
-    conn = test_connection()
+    conn = get_engine()
     cursor = conn.cursor()
     for _, row in rows_to_delete.iterrows():
         cursor.execute("DELETE FROM studentlist WHERE id = %s", (row["id"],))
