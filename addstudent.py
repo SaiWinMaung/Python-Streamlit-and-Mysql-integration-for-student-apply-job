@@ -1,17 +1,19 @@
 import streamlit as st
+from sqlalchemy import text
 from db import get_engine
 
 st.title('Add Student')
-
+engine = get_engine()
 def save_student(name, gender, major, grade):
-    conn = get_engine()
-    cursor = conn.cursor()
-    query = """insert into studentlist(name,gender,major,grade) values (%s,%s,%s,%s)"""
-    cursor.execute(query,(name, gender, major, grade))
-    conn.commit()
-    st.success('Student Added')
-    conn.close()
-
+    query = text("""
+        INSERT INTO studentlist (name, gender, major, grade)
+        VALUES (:name, :gender, :major, :grade)
+    """)
+    with engine.begin() as conn:
+        conn.execute(
+            query,
+            {"name": name, "gender": gender, "major": major, "grade": grade}
+        )
 
 with st.form("Add student"):
     name = (st.text_input("Student Name", placeholder="Enter Student Name"))

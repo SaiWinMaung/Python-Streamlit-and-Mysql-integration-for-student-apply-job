@@ -1,4 +1,5 @@
 import streamlit as st
+from sqlalchemy import text
 from db import get_engine
 import pandas as pd
 
@@ -6,7 +7,6 @@ st.title('List of students who will apply for jobs')
 
 def show_data():
     engine = get_engine()
-    st.write("engine type:", type(engine))
     with engine.connect() as conn:
         query = "select * from studentlist order by id "
         df = pd.read_sql(query, conn)
@@ -28,11 +28,12 @@ edited_df = st.data_editor(
 )
 if st.button("Delete Selected Rows"):
     rows_to_delete = edited_df[edited_df["Delete"] == True]
-    conn = get_engine()
-    cursor = conn.cursor()
-    for _, row in rows_to_delete.iterrows():
-        cursor.execute("DELETE FROM studentlist WHERE id = %s", (row["id"],))
+    if not rows_to_delete.empty:
+        engine = get_engine()
+        delete_query = text("DELETE FROM studentlist WHERE id = :id")
+        with engine.begin() as conn:  # begins a transaction and commits automatically
+            for _, row in rows_to_delete.iterrows():
+                conn.execute(delete_query, {"id": row["id"]})
 
-    conn.commit()
-    st.success("Selected rows deleted successfully!")
-    st.rerun()
+        st.success("Selected rows deleted successfully!")
+        st.rerun()
