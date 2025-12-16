@@ -4,10 +4,10 @@ from mysql.connector import Error
 def test_connection():
     try:
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="sai345543",
-            database="db_student",
+            host=st.secrets["mysql"]["localhost"],
+            user=st.secrets["mysql"]["root"],
+            password=st.secrets["mysql"]["sai345543"],
+            database=st.secrets["mysql"]["student_db"],
             auth_plugin="caching_sha2_password",
         )
         if connection.is_connected():
