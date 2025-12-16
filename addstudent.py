@@ -1,23 +1,7 @@
 import streamlit as st
-import mysql.connector
-from mysql.connector import Error
+from student import test_connection
 
 st.title('Add Student')
-def test_connection():
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="sai345543",
-            database="db_student",
-            auth_plugin="caching_sha2_password",
-        )
-        if connection.is_connected():
-            print("Connection is successful")
-            return connection
-    except Error as e:
-        print(f"Error : {e}")
-
 
 def save_student(name, gender, major, grade):
     conn = test_connection()
